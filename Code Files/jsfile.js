@@ -102,21 +102,28 @@ function moveTotarget(plo, plt) {
 
       updatePosition(plo, px, py);
       let angle = Math.atan2(dy, dx) * 180 / Math.PI;
-      plo.style.transform = "rotate(" + (angle) + "deg)";
+      plo.style.transform = "rotate(" + (angle+30) + "deg)";
 
       requestAnimationFrame(animate);
     } else {
       updatePosition(plo, fx, fy);
     }
 
-    // Check for collision with the target enemy
- if (objdist(plo, plt) < 5) {
-    plo.remove();
-    plt.remove();
+  // Check for collision with the target enemy
+  if (objdist(plo,plt)<0.1){
+  let exp = document.createElement("img");
+  exp.src = "../Resources/explosion.gif";
+  exp.style.position = "absolute";
+  exp.style.left = plt.style.left;
+  exp.style.top = plt.style.top;
+  exp.style.width = "150px";
+   
 
-    score += 1;
-    scoreDisplay.innerHTML = "Score: " + score;
-
+  document.body.appendChild(exp);
+  plo.remove();plt.remove() ;
+  setTimeout(() => {
+  exp.remove();
+}, 800);
     return; // stops the animation loop
   }
 }
@@ -126,7 +133,7 @@ function moveTotarget(plo, plt) {
   //create enemy
 function createObject(ox, oy) { 
    let obj = document.createElement("img");
-   obj.src = "Resources/shot.png";
+   obj.src = "../Resources/shot.png";
    obj.style.position = "absolute";
    obj.className = "enemy";
    obj.style.left = ox + "vw";
@@ -140,7 +147,7 @@ function createObject(ox, oy) {
 // create a rocket
  function createRocket(ox, oy) {
    let obj = document.createElement("img");
-   obj.src = "Resources/rocket.png";
+   obj.src = "../Resources/rocket.gif";
    obj.style.position = "absolute";
    obj.className = "rocket";
    obj.style.left = ox + "vw";
