@@ -4,11 +4,7 @@ body {
   overflow: hidden;
   height: 100vh;
   position: relative;
-<<<<<<< HEAD
-  background-image: url('../Resources/space.png');
-=======
   background-image: url('../resources/space.png');
->>>>>>> f2c3d61351a450c011b97e8160a50a8aa70803e2
   background-size: 100% 100%;
   background-position: center;
 
