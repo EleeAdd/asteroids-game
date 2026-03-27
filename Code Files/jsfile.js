@@ -54,6 +54,7 @@ scoreDisplay.style.zIndex = "10";
 
 function moveToEarth(pl) {
      moving = true;
+     let hasExplodedAtEarth = false;
 
      let px = parseFloat(pl.style.left) || 0; //starting x
      let py = parseFloat(pl.style.top) || 0;  //starting y
@@ -76,7 +77,10 @@ function moveToEarth(pl) {
         
          updatePosition(pl,nx,ny);
           pl.style.transform = "rotate("+nx*10+"deg)";
-        if(odist(pl,90,80)<5){pl.remove();
+        if (!hasExplodedAtEarth && odist(pl,90,80)<5){
+            hasExplodedAtEarth = true;
+            moving = false;
+            pl.remove();
             // explosion
     let exp = document.createElement("img");
   exp.src = "../Resources/explosion.gif";
@@ -88,6 +92,7 @@ function moveToEarth(pl) {
   setTimeout(() => {
   exp.remove();
 }, 800);
+            return;
         }
 
 
@@ -223,9 +228,7 @@ if (targetEnemy) {
     moveTotarget(rocket, targetEnemy);
 
 }
-moveTotarget(rocket,target_Enemy);
-}
-)
+});
 
 
 // loop generating enemy function
