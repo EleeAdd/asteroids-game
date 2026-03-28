@@ -71,34 +71,59 @@ scoreDisplay.style.zIndex = "10";
 
 
 function moveToEarth(pl) {
-     moving = true;
+  let hasExplodedAtEarth = false; 
 
-     let px = parseFloat(pl.style.left) || 0; //starting x
-     let py = parseFloat(pl.style.top) || 0;  //starting y
-    
-     fx = 90; //final x (earth)
-     fy = 80; //final y (earth)
+  let px = parseFloat(pl.style.left) || 0; //starting x
+  let py = parseFloat(pl.style.top) || 0;  //starting y
+ 
+  let fx = 90; //final x (earth)
+  let fy = 80; //final y (earth)
 
-     let nx=px;
-     let ny=py; //next position
+  let nx=px;
+  let ny=py; //next position
 
-     function animate() {
-     dx = fx - nx;
-     dy = fy - ny;
-     dist = Math.sqrt(dx * dx + dy * dy);
+  function animate() {
+      // --- KILLS THE BACKGROUND LOOP IF GAME IS OVER ---
+      if (isGameOver) return; 
 
-       if (dist>1 && moving == true) {
+      dx = fx - nx;
+      dy = fy - ny;
+      dist = Math.sqrt(dx * dx + dy * dy);
 
-         if (nx< fx) nx +=(speed*dx/dist);
-         if (ny< fy) ny +=(speed*dy/dist);
-        
-         updatePosition(pl,nx,ny);
+      if (dist>1) { // Removed 'moving' variable since it's global and buggy
+
+          if (nx< fx) nx +=(speed*dx/dist);
+          if (ny< fy) ny +=(speed*dy/dist);
+         
+          updatePosition(pl,nx,ny);
           pl.style.transform = "rotate("+nx*10+"deg)";
-         requestAnimationFrame(animate);
-       }     
-     }
-    
-     requestAnimationFrame(animate);
+          
+          // --- GAME OVER & EXPLOSION LOGIC ---
+          if (!hasExplodedAtEarth && odist(pl, 90, 80) < 5) {
+              hasExplodedAtEarth = true;
+              pl.remove(); 
+              
+              let exp = document.createElement("img");
+              exp.src = "../Resources/explosion.gif";
+              exp.style.position = "absolute";
+              exp.style.left = "80vw";
+              exp.style.top = "60vh";
+              exp.style.width = "500px";
+              document.body.appendChild(exp);
+              setTimeout(() => {
+                  exp.remove();
+              }, 800);
+              
+              triggerGameOver();
+              
+              return; 
+          }
+
+          requestAnimationFrame(animate);
+      }     
+  }
+ 
+  requestAnimationFrame(animate);
 }
 
 function moveTotarget(plo, plt) {
@@ -223,22 +248,30 @@ if (targetEnemy) {
     moveTotarget(rocket, targetEnemy);
 
 }
-moveTotarget(rocket,target_Enemy);
-}
-)
+});
 
 
 // loop generating enemy function
 function randenemy(){
 
-  if (isGameOver) return; // stops the game if its over 
+  if (isGameOver) return; // stops the loop
 
-setTimeout(function() {
-moveToEarth(createObject(-20, Math.random()*120 - 40));
-randenemy();
-}, 1500);
+  setTimeout(function() {
+    // Check ONE MORE TIME before actually spawning the asteroid
+    if (isGameOver) return; 
+
+    moveToEarth(createObject(-20, Math.random()*120 - 40));
+    randenemy();
+  }, 1500);
 }
-randenemy();
+// New function to start the game
+function startGame() {
+    // Hide the initial instruction popup
+    document.getElementById('instruction-popup').style.display = 'none';
+    
+    // Start spawning the asteroids
+    randenemy();
+}
 
 
 // When the user clicks, create a laser effect from the rocket to the click position
