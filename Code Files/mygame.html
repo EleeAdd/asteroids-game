@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Memory Match</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap');
+
+        body {
+
+        /* --- UPDATE THESE LINES --- */
+        /* 1. Sets the image as the background */
+        background-image: url('background_match.jpg'); 
+        
+        /* 2. Scaled the image to fit the whole screen, cropping if needed */
+        background-size: cover; 
+        
+        /* 3. Centers the nebula image on the screen */
+        background-position: center; 
+        
+        /* 4. Prevents the image from repeating if the window is large */
+        background-repeat: no-repeat; 
+        
+        /* Keep this color as a safety backup if the image fails to load */
+        background-color: #0b0c10; 
+        /* -------------------------- */
+        
+        color: #c5c6c7;
+        font-family: 'Montserrat', sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        overflow: hidden;
+
+       
+    }
+ 
+
+        h1 {
+            color: #66fcf1; /* Neon cyan */
+            text-shadow: 0 0 15px rgba(102, 252, 241, 0.5);
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+
+        .game-board {
+            display: grid;
+            
+            /* 'vh' calculates size based on the screen height. 
+               12vh wide by 17vh tall keeps a perfect card shape! */
+            grid-template-columns: repeat(4, 17vh); 
+            grid-template-rows: repeat(4, 17vh); 
+            
+            /* The gap also scales dynamically */
+            gap: 2vh; 
+            
+            justify-content: center; 
+            align-content: center; 
+            margin-top: 2vh;
+        }
+        .card {
+            /* Tells the card to perfectly fill the grid cells we made above */
+            width: 100%;
+            height: 100%; 
+            
+            background-image: url('images_2/back_of_card.png'); 
+            
+            /* 'contain' ensures the image NEVER stretches or distorts */
+            background-size: contain; 
+            background-position: center;
+            background-repeat: no-repeat;
+            
+            background-color: transparent; 
+            border: none; 
+            box-shadow: none;
+            
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: scale(1.05); 
+        }
+
+        .card.flipped {
+            background-image: none; 
+            background-color: transparent; 
+            cursor: default;
+            transform: scale(1);
+        }
+
+        .card.matched {
+            background-image: none; 
+            background-color: transparent;
+            cursor: default;
+            opacity: 0.5; 
+        }
+
+        button {
+            margin-top: 40px;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            font-family: 'Montserrat', sans-serif;
+            color: #0b0c10;
+            background-color: #66fcf1;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(102, 252, 241, 0.4);
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #45a29e;
+        }
+
+        .back-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px; /* This moves it to the upper right corner! */
+        
+        width: 150px; /* Change this number to make your PNG bigger or smaller */
+        height: auto;
+        
+        cursor: pointer;
+        z-index: 1000; /* Makes sure it floats above everything else */
+        transition: transform 0.2s ease-in-out;
+    }
+
+    /* Makes the PNG slightly "pop" forward when you hover over it */
+    .back-btn:hover {
+        transform: scale(1.1); 
+    }
+    .popup-overlay {
+    position: fixed; /* Locks it to the screen */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(11, 12, 16, 0.85); /* Dims the game behind it */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999; /* Forces it to sit on top of the cards and back button */
+}
+
+.popup-box {
+    background-color: #1f2833;
+    border: 3px solid #66fcf1;
+    border-radius: 15px;
+    padding: 40px;
+    max-width: 600px;
+    text-align: center;
+    box-shadow: 0 0 40px rgba(102, 252, 241, 0.4);
+    color: #c5c6c7;
+}
+
+.popup-box h2 {
+    color: #66fcf1;
+    margin-top: 0;
+    font-size: 2.5rem;
+    text-shadow: 0 0 10px rgba(102, 252, 241, 0.5);
+}
+
+.popup-box p {
+    font-size: 1.3rem;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.play-btn {
+    background-color: #66fcf1;
+    color: #0b0c10;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(102, 252, 241, 0.4);
+    transition: all 0.2s;
+}
+
+.play-btn:hover {
+    background-color: #45a29e;
+    transform: scale(1.05);
+}
+
+    </style>
+</head>
+<body>
+
+    <div id="instruction-popup" class="popup-overlay">
+        <div class="popup-box">
+            <h2>SYSTEM INITIALIZATION</h2>
+            <p>Welcome to the Planetarium Memory Match!</p>
+            <p>Your mission is to restore the ship's navigational computers by finding all the matching pairs of celestial objects. Test your memory and clear the board in as few attempts as possible.</p>
+            
+            <button class="play-btn" onclick="document.getElementById('instruction-popup').style.display = 'none'">
+                I UNDERSTAND - INITIATE
+            </button>
+        </div>
+    </div>
+
+    <a href="story.html">
+        <img src="images_2/button_ placed.png" alt="Back to Main Menu" class="back-btn">
+    </a>
+
+        <h1>PLANETARIUM MEMORY MATCH</h1>
+    <div class="stats">Attempts: <span id="attempts">0</span></div>
+    
+    <div class="game-board" id="game-board"></div>
+    
+    <button onclick="resetGame()">RESTART SYSTEM</button>
+
+    <script>
+        // Replace the emojis with your actual image file paths!
+    const spaceItems = [
+        'images_2/alien.png', 'images_2/alien.png', 
+        'images_2/planet.png', 'images_2/planet.png', 
+        'images_2/rocket.png', 'images_2/rocket.png', 
+        'images_2/sun.png', 'images_2/sun.png', 
+        'images_2/meteor.png', 'images_2/meteor.png', 
+        'images_2/astronaut.png', 'images_2/astronaut.png', 
+        'images_2/satellite.png', 'images_2/satellite.png', 
+        'images_2/galaxy.png', 'images_2/galaxy.png'
+    ];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let attempts = 0;
+        let canClick = true;
+
+        const board = document.getElementById('game-board');
+        const attemptsDisplay = document.getElementById('attempts');
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function createBoard() {
+            board.innerHTML = '';
+            const shuffledItems = shuffle([...spaceItems]);
+            
+            shuffledItems.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.value = item;
+                card.dataset.index = index;
+                
+                // Keep text hidden initially
+                // Injects the front image and makes it fill the whole invisible space
+        card.innerHTML = `<img src="${item}" style="visibility: hidden; width: 100%; height: 100%; object-fit: contain;">`;
+                
+                card.addEventListener('click', flipCard);
+                board.appendChild(card);
+            });
+        }
+
+        function flipCard() {
+            if (!canClick || this.classList.contains('flipped') || this.classList.contains('matched')) return;
+
+            this.classList.add('flipped');
+            
+            // WE CHANGED THIS LINE: It now looks for the 'img' to make visible
+            this.querySelector('img').style.visibility = 'visible';
+            flippedCards.push(this);
+
+            if (flippedCards.length === 2) {
+                attempts++;
+                attemptsDisplay.textContent = attempts;
+                checkForMatch();
+            }
+        }
+
+        function checkForMatch() {
+            canClick = false;
+            const [card1, card2] = flippedCards;
+
+            if (card1.dataset.value === card2.dataset.value) {
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                matchedPairs++;
+                flippedCards = [];
+                canClick = true;
+                
+                if (matchedPairs === spaceItems.length / 2) {
+                    setTimeout(() => alert(`System Restored! You found all matches in ${attempts} attempts.`), 500);
+                }
+            } else {
+                // If no match, hide them again after a short delay
+                setTimeout(() => {
+                    card1.classList.remove('flipped');
+                    
+                    // WE CHANGED THESE LINES TOO: It hides the 'img' again
+                    card1.querySelector('img').style.visibility = 'hidden';
+                    card2.classList.remove('flipped');
+                    card2.querySelector('img').style.visibility = 'hidden';
+                    
+                    flippedCards = [];
+                    canClick = true;
+                }, 1000);
+            }
+        }
+
+        function resetGame() {
+            matchedPairs = 0;
+            attempts = 0;
+            attemptsDisplay.textContent = attempts;
+            flippedCards = [];
+            canClick = true;
+            createBoard();
+        }
+
+        // Initialize the game when the page loads
+        createBoard();
+       
+    </script>
+</body>
+</html>
