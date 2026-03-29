@@ -7,7 +7,8 @@ let rocketSpeed = 0.8;
 
 // Score tracker - updates score when an enemy is removed
 let score = 0;
-
+let enemySpawnRate = 3000;
+let bossSpawnRate = 4000; 
 // Track game state
 let isGameOver = false;
 
@@ -291,7 +292,7 @@ function randenemy(){
     // Spawns at X: -20 (left wall), Y: between 10 and 90 (visible screen height)
     moveToEarth(createObject(-20, Math.random() * 80 + 10));
     randenemy();
-  }, 1500);
+  }, enemySpawnRate );
 }
 
 // Array of your generated boss asteroid images
@@ -330,7 +331,7 @@ function randBoss(){
     
     // Bosses spawn a bit slower, every 4 seconds
     randBoss(); 
-  }, 4000);
+  }, enemySpawnRate);
 }
 
 
@@ -403,6 +404,15 @@ function startGame() {
         randFriend();
     }
 }, 20000);
+
+// 🔴 SUDDEN DEATH MODE! (Starts after 45 seconds)
+setTimeout(() => {
+  if (!isGameOver) {
+      console.log("WARNING: ASTEROID STORM DETECTED!");
+      // Drop the spawn delay from 1500ms down to 600ms! (More than twice as fast)
+      enemySpawnRate = 600; 
+  }
+}, 45000);
 
 }
 
