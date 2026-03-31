@@ -78,27 +78,25 @@ function moveToEarth(pl) {
   let ny=py; //next position
 
   function animate() {
-      // --- KILLS THE BACKGROUND LOOP IF GAME IS OVER ---
-      if (isGameOver) return; 
+    if (isGameOver) return; 
+    if (!document.body.contains(pl)) return;
 
-      // If the asteroid was destroyed by a rocket and removed from the game, STOP the math!
-      if (!document.body.contains(pl)) return;
+    // Add 'let' to keep these variables strictly within this asteroid's math
+    let dx = fx - nx;
+    let dy = fy - ny;
+    let dist = Math.sqrt(dx * dx + dy * dy);
 
-      dx = fx - nx;
-      dy = fy - ny;
-      dist = Math.sqrt(dx * dx + dy * dy);
-
-      if (dist>1) { // Removed 'moving' variable since it's global and buggy
-
-          if (nx< fx) nx +=(speed*dx/dist);
-          if (ny< fy) ny +=(speed*dy/dist);
-         
-          updatePosition(pl,nx,ny);
-          pl.style.transform = "rotate("+nx*10+"deg)";
-          
-            // --- GAME OVER & FRIENDLY LOGIC ---
-            if (!hasExplodedAtEarth && odist(pl, 90, 80) < 5) {
-              hasExplodedAtEarth = true;
+    if (dist > 1) { 
+        // Remove the 'if (nx < fx)' and 'if (ny < fy)' checks
+        nx += (speed * dx / dist);
+        ny += (speed * dy / dist);
+       
+        updatePosition(pl, nx, ny);
+        pl.style.transform = "rotate(" + nx * 10 + "deg)";
+        
+        // --- GAME OVER & FRIENDLY LOGIC ---
+        if (!hasExplodedAtEarth && odist(pl, 90, 80) < 5) {
+            hasExplodedAtEarth = true;
               
               // Check if it's the friendly ship!
               if (pl.classList.contains("friend")) {
@@ -395,7 +393,7 @@ function startGame() {
           console.log("Boss asteroids incoming!");
           randBoss();
       }
-  }, bossSpawnRate);
+  }, 15000);
 
   // INCOMING FRIENDLY BACKUP! (Starts after 20 seconds)
   setTimeout(() => {
@@ -409,13 +407,12 @@ function startGame() {
 setTimeout(() => {
   if (!isGameOver) {
       console.log("WARNING: ASTEROID STORM DETECTED!");
-      // Drop the spawn delay from 1500ms down to 200ms! (More than twice as fast)
-      enemySpawnRate = 200; 
-      bossSpawnRate = 200;
+      // Drop the spawn delay from 1500ms down to 200ms!
+      enemySpawnRate = 200; // Changed from 13000 to 200
   }
 }, 45000);
 
-}
+};
 
 
 // When the user clicks, create a laser effect from the rocket to the click position
