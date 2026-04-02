@@ -12,6 +12,24 @@ let bossSpawnRate = 4500;
 // Track game state
 let isGameOver = false;
 
+
+//turns off the right click 
+document.addEventListener('contextmenu', (event) => {
+  event.preventDefault();
+}, false);
+
+document.addEventListener('touchstart', (event) => {
+  // Only prevent the browser's action if there is more than one finger
+  if (event.touches.length > 1) {
+      event.preventDefault(); 
+  }
+}, { passive: false });
+
+document.addEventListener('gesturestart', (event) => {
+  // Specifically for Safari (iOS)
+  event.preventDefault();
+});
+
 // Function to handle the end of the game
 function triggerGameOver() {
     if (isGameOver) return; // Prevent it from triggering multiple times

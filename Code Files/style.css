@@ -1,4 +1,12 @@
 
+canvas, .game-container {
+  /* Prevents all browser-level touch interactions except individual taps */
+  touch-action: none; 
+  
+  /* Disables text selection which can be annoying in games */
+  user-select: none;
+  -webkit-user-select: none;
+}
 body {
   margin: 0;
   overflow: hidden;
@@ -25,9 +33,9 @@ body {
 .popup-box {
   background-color: #1f2833;
   border: 3px solid #66fcf1;
-  border-radius: 15px;
-  padding: 40px;
-  max-width: 600px;
+  border-radius: 5vh;
+  padding: 4vh;
+  max-width: 90vh;
   text-align: center;
   box-shadow: 0 0 40px rgba(102, 252, 241, 0.4);
   color: #c5c6c7;
@@ -36,12 +44,12 @@ body {
 .popup-box h2 {
   color: #66fcf1;
   margin-top: 0;
-  font-size: 2.5rem;
+  font-size: 3.5rem;
   text-shadow: 0 0 10px rgba(102, 252, 241, 0.5);
 }
 
 .popup-box p {
-  font-size: 1.3rem;
+  font-size: 1.9rem;
   line-height: 1.6;
   margin-bottom: 30px;
 }
@@ -50,7 +58,7 @@ body {
   background-color: #66fcf1;
   color: #0b0c10;
   padding: 15px 30px;
-  font-size: 1.2rem;
+  font-size: 2.2rem;
   font-weight: bold;
   border: none;
   border-radius: 8px;
@@ -109,9 +117,19 @@ body {
 
 /* Optional: Adjusts the size and behavior of the image itself */
 .back-btn {
-  width: 150px; /* Change this number if the image is too big or small */
-  cursor: pointer; /* Makes sure the mouse turns into a clicking hand */
-  transition: transform 0.2s; /* Adds a smooth animation speed */
+  position: absolute;
+  top: 2vh;          /* Distance from the top */
+  right: 2vh;        /* Distance from the right */
+  width: 30vh;        /* Adjust size for easy touch */
+  height: auto;
+  
+  /* This is the magic line: */
+  z-index: 9999;      
+  
+  /* Ensure it doesn't get grayed out or zoomed by the browser */
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
 }
 
 /* Optional: Makes the button "pop" slightly when you hover over it */

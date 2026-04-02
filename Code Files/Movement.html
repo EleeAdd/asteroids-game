@@ -4,7 +4,7 @@
  <title>Smooth Move</title>
   <link rel="stylesheet" href="style.css">
 
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 </head>
 
@@ -25,9 +25,7 @@
     </div>
 </div>
 
-<a href="story.html" class="top-right-link">
-  <img src="button.png" alt="Back to Main Menu" class="back-btn">
-</a>
+
 
 <div id="game-over-popup" class="popup-overlay" style="display: none;">
   <div class="popup-box">
@@ -46,7 +44,25 @@
   
  <script src="jsfile.js"></script>
 
- 
+ <script> window.addEventListener("load", function() {
+ setTimeout(function(){
+
+  const resumeBtn = document.querySelector( 'button[data-dv_ref="resume"]');
+  if(resumeBtn) {
+    resumeBtn.click();
+  }
+ },10); 
+ });
+ </script>
+
+<body>
+  <div id="game-container">
+      </div>
+
+  <a href="story.html">
+      <img src="button.png" alt="Back" class="back-btn">
+  </a>
+</body>
 
 </body>
 </html>
