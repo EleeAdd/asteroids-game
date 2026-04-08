@@ -49,17 +49,6 @@ This project was developed as part of a team during my internship.
 
 ---
 
-## 📸 Demo / Preview
-
-(Add screenshots or a short screen recording here if possible)
-
----
-
-## 🔗 Original Project
-
-(Add link to original repository if public)
-
----
 
 ## 📌 Notes
 
